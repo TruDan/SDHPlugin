@@ -252,7 +252,7 @@ public class Events implements Listener {
 							sdhplayer.setPurchaseMode(false);
 							sdhplayer.setPlotBuyMode(false);
 							// Do Sign
-							editPlotSign(player,zone,number,region);
+							PlotManager.editPlotSign(player,zone,number,region);
 						}
 						else {
 							player.sendMessage(ChatColor.RED+"You cannot afford this plot! Purchase cancelled.");
@@ -284,50 +284,6 @@ public class Events implements Listener {
 		}
 	}
 	
-	public static void editPlotSign(Player player, String zone, String number, ProtectedRegion region) {
-		String line1 = "######";
-		String line2 = zone+" Zone - "+number;
-		String line3 = player.getName();
-		String line4 = "######";
-		
-		World world = player.getWorld();
-		
-		
-		BlockVector max = region.getMaximumPoint();
-		BlockVector min = region.getMinimumPoint();
-		
-		int minx = Math.min(max.getBlockX()+1, min.getBlockX()-1),
-	    miny = Math.min(max.getBlockY()+1, min.getBlockY()-1),
-	    minz = Math.min(max.getBlockZ(), min.getBlockZ()),
-	    maxx = Math.max(max.getBlockX()+1, min.getBlockX()-1),
-	    maxy = Math.max(max.getBlockY()+1, min.getBlockY()-1),
-	    maxz = Math.max(max.getBlockZ(), min.getBlockZ());
-		int a = 0;
-	    for(int x = minx; x<=maxx;x++){
-	        for(int y = miny; y<=maxy;y++){
-	            for(int z = minz; z<=maxz;z++){
-	            	a++;
-	                Block b = world.getBlockAt(x, y, z);
-                	if (b.getType().equals(Material.SIGN_POST) || b.getType().equals(Material.WALL_SIGN) || b.getType().equals(Material.SIGN)) {
-                        Sign sign = (Sign) b.getState();
-                        if (sign.getLine(0).contains("#")) {
-                            sign.setLine(0, line1);
-                            sign.setLine(1, line2);
-                            sign.setLine(2, line3);
-                            sign.setLine(3, line4);
-                            sign.update(true);
-                            player.sendMessage("yes");
-                        }
-                        else {
-                        	player.sendMessage("no");
-                        }
-                        break;
-                    }
-	            }
-	        }
-	    }
-	    player.sendMessage("Number: "+a);
-	}
 
 	private WorldGuardPlugin getWorldGuard() {
 		Plugin plugin = SirDrakeHeart.main.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -427,7 +383,7 @@ public class Events implements Listener {
 							sdhplayer.setPurchaseMode(false);
 							sdhplayer.setPlotBuyMode(false);
 							// Do Sign
-							editPlotSign(player,zone,number,region);
+							//editPlotSign(player,zone,number,region);
 						}
 						else {
 							player.sendMessage(ChatColor.RED+"You cannot afford this plot! Purchase cancelled.");

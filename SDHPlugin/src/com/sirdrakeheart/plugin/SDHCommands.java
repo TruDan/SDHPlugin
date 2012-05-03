@@ -26,8 +26,8 @@ public class SDHCommands {
 		Player player = (Player) sender;
 		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.giveplot")) {
 			if(args.length == 3) {
-				player.chat("/region addowner house_"+args[1]+args[2]+" "+args[0]);
 				Player target = SirDrakeHeart.main.getServer().getPlayer(args[0]);
+				PlotManager.givePlot(target,args[1],args[2]);
 				player.sendMessage(ChatColor.GREEN+target.getName()+" now owns plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
 				target.sendMessage(ChatColor.YELLOW+player.getName()+" just gave you plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
 			}
