@@ -1,0 +1,25 @@
+name: SirDrakeHeart Plugin
+main: com.sirdrakeheart.plugin.SirDrakeHeart
+version: 1.0
+depend: [Vault,Citizens,WorldGuard]
+commands:
+   makeprivate:
+      description: Makes a user a Private
+      usage: /makeprivate [player]
+      permission: sirdrakeheart.makeprivate
+   giveplot:
+      description: Gives a user a plot
+      usage: /giveplot [player] [zone] [number]
+      permission: sirdrakeheart.giveplot
+   setupplot:
+      description: Sets up a plot with your current Worldedit Selection
+      usage: /setupplot [zone] [number]
+      permission: sirdrakeheart.setupplot
+   pay:
+      description: Pay a player an amount
+      usage: /pay [player] [amount]
+      permission: sirdrakeheart.pay
+   flagall:
+      description: Set a flag for ALL House_ WorldGuard Regions
+      usage: /flagall [flag] [value]
+      permission: sirdrakeheart.flagall
