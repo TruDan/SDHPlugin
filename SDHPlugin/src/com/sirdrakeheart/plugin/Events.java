@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -111,6 +112,17 @@ public class Events implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+		String playerName = player.getName();
+		
+		if(TeamPvPCore.players.containsKey(playerName)) {
+			TeamPvPCore.players.remove(playerName);
+			TeamPvPCore.redTeamAlive.remove(playerName);
+			TeamPvPCore.blueTeamAlive.remove(playerName);
+			TeamPvPCore.redTeam.remove(playerName);
+			TeamPvPCore.blueTeam.remove(playerName);
+			TeamPvPCore.killed.remove(playerName);
+			Utils.broadcastPvPMessage(player.getDisplayName()+ChatColor.GRAY+" has resigned from the game.");
+		}
 		
 		String message = "has left the game.";
 		if (filterCheckGeneric) {
@@ -135,6 +147,17 @@ public class Events implements Listener {
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
 		Player player = event.getPlayer();
+		String playerName = player.getName();
+		
+		if(TeamPvPCore.players.containsKey(playerName)) {
+			TeamPvPCore.redTeamAlive.remove(playerName);
+			TeamPvPCore.blueTeamAlive.remove(playerName);
+			TeamPvPCore.redTeam.remove(playerName);
+			TeamPvPCore.blueTeam.remove(playerName);
+			TeamPvPCore.killed.remove(playerName);
+			Utils.broadcastPvPMessage(player.getDisplayName()+ChatColor.GRAY+" has resigned from the game.");
+		}
+		
 		event.setLeaveMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has been kicked from the game.");
 	}
 	
@@ -147,6 +170,62 @@ public class Events implements Listener {
 		}
 		return str;
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+
+		if (event.isCancelled()) {
+			return;
+		}
+
+		Entity p1 = event.getDamager();
+		Entity p2 = event.getEntity();
+		
+		if (p1 instanceof Projectile) {
+			p1 = ((Projectile) p1).getShooter();
+		}
+		
+		if (event.getEntity() instanceof Wolf) {
+			Wolf wolf = (Wolf) event.getEntity();
+			if (wolf.getOwner() != null) {
+				try {
+					p1 = (Entity) wolf.getOwner();
+				} catch (Exception e) {
+					
+				}
+			}
+		}
+		
+		if ((p2 == null) || (!(p2 instanceof Player))) {
+			return;
+		}
+		
+		if ((p1 == null) || (!(p1 instanceof Player))) {
+			return;
+		}
+		
+
+		Player attacker = (Player) p1;
+		Player defender = (Player) p2;
+		
+		// Check if both are in PvP
+		if(TeamPvPCore.players.containsKey(attacker.getName()) && TeamPvPCore.players.containsKey(defender.getName())) {
+			// Check if they are both "alive"
+			if((TeamPvPCore.redTeamAlive.containsKey(attacker.getName()) || TeamPvPCore.blueTeamAlive.containsKey(attacker.getName())) && (TeamPvPCore.redTeamAlive.containsKey(defender.getName()) || TeamPvPCore.blueTeamAlive.containsKey(defender.getName()))) {
+				// Check they are on different teams
+				if((TeamPvPCore.redTeamAlive.containsKey(attacker.getName()) && TeamPvPCore.blueTeamAlive.containsKey(defender.getName())) || (TeamPvPCore.redTeamAlive.containsKey(defender.getName()) && TeamPvPCore.blueTeamAlive.containsKey(attacker.getName()))) {
+					//Process the death
+					TeamPvPCore.processKill(attacker, defender);
+				}
+				else {
+					attacker.sendMessage(ChatColor.RED+"This player is on your own team! You cannot hurt them.");
+					event.setCancelled(true);
+				}
+			}
+		}
+		
+	}
+	
 
 	@EventHandler
 	public void onBlockDamage(BlockDamageEvent event) {

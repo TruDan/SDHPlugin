@@ -62,11 +62,21 @@ public class SirDrakeHeart extends JavaPlugin {
 			else if(cmd.getName().equalsIgnoreCase("giveplot")) {
 				return SDHCommands.giveplot(sender, cmd, commandLabel, args);
 			}
+
+			else if(cmd.getName().equalsIgnoreCase("givestall")) {
+				return SDHCommands.giveStall(sender, cmd, commandLabel, args);
+			}
 			else if(cmd.getName().equalsIgnoreCase("pay")) {
 				return SDHCommands.pay(sender, cmd, commandLabel, args);
 			}
 			else if(cmd.getName().equalsIgnoreCase("setupplot")) {
 				return SDHCommands.setupplot(sender, cmd, commandLabel, args);
+			}
+			else if(cmd.getName().equalsIgnoreCase("setupstall")) {
+				return SDHCommands.setupstall(sender, cmd, commandLabel, args);
+			}
+			else if(cmd.getName().equalsIgnoreCase("pvp")) {
+				return SDHCommands.pvp(sender, cmd, commandLabel, args);
 			}
 			else if(cmd.getName().equalsIgnoreCase("flagall")) {
 				return SDHCommands.flagall(sender, cmd, commandLabel, args);

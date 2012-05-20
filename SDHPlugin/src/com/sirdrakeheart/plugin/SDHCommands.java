@@ -46,7 +46,76 @@ public class SDHCommands {
 		return true;
 	}
 	
-	public static boolean givestall(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+	public static boolean pvp(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		Player player = (Player) sender;
+		if(args[0].equalsIgnoreCase("join")) {
+			TeamPvPCore.joinTeam(player,args[1]);
+		}
+		else if(args[0].equalsIgnoreCase("play")) {
+			TeamPvPCore.joinGame(player);
+		}
+		else if(args[0].equalsIgnoreCase("leave")) {
+			TeamPvPCore.leaveGame(player);
+		}
+		else if(args[0].equalsIgnoreCase("startnow")) {
+			SirDrakeHeart.main.getServer().getScheduler().cancelTasks(SirDrakeHeart.main);
+			TeamPvPCore.beginGame();
+			TeamPvPCore.joinPvP = false;
+		}
+		else if(args[0].equalsIgnoreCase("list")) {
+			String playerList = "";
+			Integer i = 0;
+			for(String p : TeamPvPCore.players.keySet()) {
+				if(i > 0) {
+					playerList += ", ";
+				}
+				playerList += p;
+				i++;
+			}
+			String redTeamList = "";
+			i = 0;
+			for(String p : TeamPvPCore.redTeam.keySet()) {
+				if(i > 0) {
+					redTeamList += ", ";
+				}
+				redTeamList += p;
+				i++;
+			}
+			
+			String blueTeamList = "";
+			i = 0;
+			for(String p : TeamPvPCore.blueTeam.keySet()) {
+				if(i > 0) {
+					blueTeamList += ", ";
+				}
+				blueTeamList += p;
+				i++;
+			}
+			player.sendMessage(ChatColor.GREEN+"Players: "+playerList);
+			player.sendMessage(ChatColor.RED+"Red Team: "+redTeamList);
+			player.sendMessage(ChatColor.BLUE+"Blue Team: "+blueTeamList);
+		}
+		else if(args[0].equalsIgnoreCase("start")) {
+			if(SirDrakeHeart.perms.has(player, "sirdrakeheart.startpvp")) {
+				TeamPvPCore.startGame();
+			}
+			else {
+				player.sendMessage(ChatColor.RED+"You do not have permission to use this command!");
+			}
+		}
+		else if(args[0].equalsIgnoreCase("end")) {
+			if(SirDrakeHeart.perms.has(player, "sirdrakeheart.startpvp")) {
+				SirDrakeHeart.main.getServer().getScheduler().cancelTasks(SirDrakeHeart.main);
+				TeamPvPCore.endGame();
+			}
+			else {
+				player.sendMessage(ChatColor.RED+"You do not have permission to use this command!");
+			}
+		}
+		return true;
+	}
+	
+	public static boolean giveStall(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		Player player = (Player) sender;
 		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.givestall")) {
 			if(args.length == 3) {

@@ -31,3 +31,6 @@ commands:
       description: Set a flag for ALL House_ WorldGuard Regions
       usage: /flagall [flag] [value]
       permission: sirdrakeheart.flagall
+   pvp:
+      description: Team based PvP commands
+      usage: /pvp [subcommand] [value]
