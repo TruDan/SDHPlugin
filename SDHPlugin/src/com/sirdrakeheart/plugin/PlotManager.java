@@ -27,6 +27,18 @@ public class PlotManager {
 		editPlotSign(player,zone,number,region);
 	}
 	
+	public static void giveStall(Player player, String zone, String number) {
+		WorldGuardPlugin worldGuard = getWorldGuard();
+		World world = player.getWorld();
+		
+		RegionManager regionManager = worldGuard.getRegionManager(world);
+		ProtectedRegion region = regionManager.getRegion("stall_"+zone.toLowerCase()+number);
+		DefaultDomain owners = region.getOwners();
+		owners.addPlayer(player.getName());
+		region.setOwners(owners);
+		editPlotSign(player,zone,number,region);
+	}
+	
 	public static void editPlotSign(Player player, String zone, String number, ProtectedRegion region) {
 		String line1 = "######";
 		String line2 = zone+" Zone - "+number;

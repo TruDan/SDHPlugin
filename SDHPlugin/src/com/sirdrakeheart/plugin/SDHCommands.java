@@ -27,12 +27,41 @@ public class SDHCommands {
 		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.giveplot")) {
 			if(args.length == 3) {
 				Player target = SirDrakeHeart.main.getServer().getPlayer(args[0]);
-				PlotManager.givePlot(target,args[1],args[2]);
-				player.sendMessage(ChatColor.GREEN+target.getName()+" now owns plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
-				target.sendMessage(ChatColor.YELLOW+player.getName()+" just gave you plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
+				if(target != null) {
+					PlotManager.givePlot(target,args[1],args[2]);
+					player.sendMessage(ChatColor.GREEN+target.getName()+" now owns plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
+					target.sendMessage(ChatColor.YELLOW+player.getName()+" just gave you plot number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
+				}
+				else {
+					player.sendMessage(ChatColor.RED+"Player "+args[0]+" does not exist.");
+				}
 			}
 			else {
 				player.sendMessage(ChatColor.RED+"Usage: /giveplot [player] [zone] [number]");
+			}
+		}
+		else {
+			player.sendMessage(ChatColor.RED+"You do not have permission to use this command!");
+		}
+		return true;
+	}
+	
+	public static boolean givestall(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		Player player = (Player) sender;
+		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.givestall")) {
+			if(args.length == 3) {
+				Player target = SirDrakeHeart.main.getServer().getPlayer(args[0]);
+				if(target != null) {
+					PlotManager.giveStall(target,args[1],args[2]);
+					player.sendMessage(ChatColor.GREEN+target.getName()+" now owns stall number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
+					target.sendMessage(ChatColor.YELLOW+player.getName()+" just gave you stall number "+args[2]+" in the "+args[1].toLowerCase()+" zone.");
+				}
+				else {
+					player.sendMessage(ChatColor.RED+"Player "+args[0]+" does not exist.");
+				}
+			}
+			else {
+				player.sendMessage(ChatColor.RED+"Usage: /givestall [player] [zone] [number]");
 			}
 		}
 		else {
@@ -47,14 +76,19 @@ public class SDHCommands {
 		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.makeprivate")) {
 			if(args.length > 0) {
 				Player target = SirDrakeHeart.main.getServer().getPlayer(args[0]);
-				if(SirDrakeHeart.perms.getPrimaryGroup(target).equalsIgnoreCase("guest")) {
-					SirDrakeHeart.perms.playerRemoveGroup(target,"Guest");
-					SirDrakeHeart.perms.playerAddGroup(target, "Private");
-					player.sendMessage(ChatColor.GREEN+target.getName()+" has been set to the Private group!");
-					target.sendMessage(ChatColor.GREEN+player.getName()+" has promoted you to Private!");
+				if(target != null){
+					if(SirDrakeHeart.perms.getPrimaryGroup(target).equalsIgnoreCase("guest")) {
+						SirDrakeHeart.perms.playerRemoveGroup(target,"Guest");
+						SirDrakeHeart.perms.playerAddGroup(target, "Private");
+						player.sendMessage(ChatColor.GREEN+target.getName()+" has been set to the Private group!");
+						target.sendMessage(ChatColor.GREEN+player.getName()+" has promoted you to Private!");
+					}
+					else {
+						player.sendMessage(ChatColor.RED+"That player is not in the Guest group! They are in: "+SirDrakeHeart.perms.getPrimaryGroup(player));
+					}
 				}
 				else {
-					player.sendMessage(ChatColor.RED+"That player is not in the Guest group! They are in: "+SirDrakeHeart.perms.getPrimaryGroup(player));
+					player.sendMessage(ChatColor.RED+"Player "+args[0]+" does not exist.");
 				}
 			}
 			else {
@@ -72,7 +106,12 @@ public class SDHCommands {
 		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.pay")) {
 			if(args.length == 2) {
 				String target = SirDrakeHeart.main.getServer().getPlayer(args[0]).getName();
-				player.chat("/money pay "+target+" "+args[1]);
+				if(target != null) {
+					player.chat("/money pay "+target+" "+args[1]);
+				}
+				else {
+					player.sendMessage(ChatColor.RED+"Player "+args[0]+" does not exist.");
+				}
 			}
 			else {
 				player.sendMessage(ChatColor.RED+"Usage: /pay [player] [amount]");
@@ -98,6 +137,26 @@ public class SDHCommands {
 			}
 			else {
 				player.sendMessage(ChatColor.RED+"Usage: /setupplot [zone] [number]");
+			}
+		}
+		else {
+			player.sendMessage(ChatColor.RED+"You do not have permission to use this command!");
+		}
+		return true;
+	}
+	
+	public static boolean setupstall(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		Player player = (Player) sender;
+		if(SirDrakeHeart.perms.has(player, "sirdrakeheart.setupstall")) {
+			if(args.length == 2) {
+				String zone = args[0];
+				String number = args[1];
+				player.chat("//expand 5 up");
+				player.chat("/region define Stall_"+zone+number);
+				player.chat("/region flag Stall_"+zone+number+" chest-access deny");
+			}
+			else {
+				player.sendMessage(ChatColor.RED+"Usage: /setupstall [zone] [number]");
 			}
 		}
 		else {

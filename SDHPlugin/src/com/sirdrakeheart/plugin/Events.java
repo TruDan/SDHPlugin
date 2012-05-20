@@ -108,7 +108,7 @@ public class Events implements Listener {
 		event.setJoinMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has joined the game.");
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		
@@ -129,6 +129,7 @@ public class Events implements Listener {
 			message = "lost connection to the game.";
 		}
 		event.setQuitMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" "+message);
+		SirDrakeHeart.log.info(player.getName()+" "+message);
 	}
 	
 	@EventHandler

@@ -16,14 +16,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SirDrakeHeart extends JavaPlugin {
 	
-	Logger log;
+	static Logger log;
 	public static String filepath = "plugins" + File.separator + "SirDrakeHeart" + File.separator;
 	public static SirDrakeHeart main;
 	
 	public static Permission perms = null;
 	public static Economy economy = null;
 	public void onEnable(){ 
-		log = this.getLogger();
+		log = Logger.getLogger("Minecraft");
 		log.setFilter(new DCReasonFilter(this));
 		SirDrakeHeart.main = this;
 		

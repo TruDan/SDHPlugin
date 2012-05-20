@@ -15,6 +15,14 @@ commands:
       description: Sets up a plot with your current Worldedit Selection
       usage: /setupplot [zone] [number]
       permission: sirdrakeheart.setupplot
+   givestall:
+      description: Gives a user a stall
+      usage: /givestall [player] [zone] [number]
+      permission: sirdrakeheart.givestall
+   setupstall:
+      description: Sets up a Stall with your current Worldedit Selection
+      usage: /setupstall [zone] [number]
+      permission: sirdrakeheart.setupstall
    pay:
       description: Pay a player an amount
       usage: /pay [player] [amount]
