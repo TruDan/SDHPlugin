@@ -5,10 +5,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,16 +14,14 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import com.gmail.nossr50.api.ExperienceAPI;
-import com.gmail.nossr50.datatypes.SkillType;
 import com.gmail.nossr50.events.experience.McMMOPlayerLevelUpEvent;
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -40,6 +35,13 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import static com.sk89q.worldguard.bukkit.BukkitUtil.*;
 
 public class Events implements Listener {
+	
+	public static boolean filterCheckGeneric = false;
+	public static boolean filterCheckStream = false;
+	public static boolean filterCheckOverflow = false;
+	public static boolean filterCheckQuitting = false;
+	public static boolean filterCheckTimeout = false;
+	public static boolean filterCheckJoin = false;
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerChat(PlayerChatEvent event) {
@@ -90,18 +92,7 @@ public class Events implements Listener {
 	public void onPlayerLevelUp(final McMMOPlayerLevelUpEvent event) {
 		Player player = event.getPlayer();
 		SDHPlayer sdhplayer = SDHPlayers.getPlayer(player.getName());
-		ExperienceAPI xpapi = new ExperienceAPI();
-		
-		Integer currentLevel = sdhplayer.getPowerLevel();
-		Integer levels = xpapi.getLevel(player, SkillType.ARCHERY) + xpapi.getLevel(player, SkillType.SWORDS) + xpapi.getLevel(player, SkillType.UNARMED);
-		Integer newLevel = (int) Math.floor(levels/3);
-		
-		sdhplayer.setPowerLevel(newLevel);
-		
-		if(newLevel > currentLevel) {
-			broadcastToPlayers(player,"[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has upgraded up to Combat Level "+newLevel);
-		}
-		
+		sdhplayer.updatePowerLevel(true);
 	}
 	
 	@EventHandler
@@ -109,13 +100,8 @@ public class Events implements Listener {
 		Player player = event.getPlayer();
 		PermissionUser user = PermissionsEx.getUser(player);
 		SDHPlayer sdhplayer = SDHPlayers.getPlayer(player.getName());
-		ExperienceAPI xpapi = new ExperienceAPI();
 		String world = player.getWorld().getName();
-		
-		Integer levels = xpapi.getLevel(player, SkillType.ARCHERY) + xpapi.getLevel(player, SkillType.SWORDS) + xpapi.getLevel(player, SkillType.UNARMED);
-		Integer newLevel = (int) Math.floor(levels/3);
-		
-		sdhplayer.setPowerLevel(newLevel);
+		sdhplayer.updatePowerLevel();
 		
 		String suffix = convertColors(user.getOption("suffix", world));
 		player.setDisplayName(suffix+player.getName()+ChatColor.GRAY);
@@ -125,41 +111,37 @@ public class Events implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		event.setQuitMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has left the game.");
+		
+		String message = "has left the game.";
+		if (filterCheckGeneric) {
+			message = "lost connection to the game.";
+		}
+		if (filterCheckStream) {
+			message = "lost connection to the game.";
+		}
+		if (filterCheckOverflow) {
+			message = "lost connection to the game.";
+		}
+		if (filterCheckQuitting) {
+			message = "has quit the game.";
+		}
+		if (filterCheckTimeout) {
+			message = "lost connection to the game.";
+		}
+		event.setQuitMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" "+message);
 	}
 	
-	public void broadcastToPlayers(Player from,String msg) {
-		if(msg.contains("{COLOR}")) {
-			Player[] players = SirDrakeHeart.main.getServer().getOnlinePlayers();
-			SDHPlayer fromSdhPlayer = SDHPlayers.getPlayer(from.getName());
-			
-			Integer fromLvl =  fromSdhPlayer.getPowerLevel();
-			
-			for(Player to : players) {
-				SDHPlayer toSdhPlayer = SDHPlayers.getPlayer(to.getName());
-				Integer toLvl = toSdhPlayer.getPowerLevel();
-				if(toLvl > fromLvl) {
-					msg = msg.replace("{COLOR}", ""+ChatColor.GREEN);
-				}
-				else if(toLvl == fromLvl) {
-					msg = msg.replace("{COLOR}", ""+ChatColor.GOLD);
-				}
-				else {
-					msg = msg.replace("{COLOR}", ""+ChatColor.RED);
-				}
-				to.sendMessage(msg);
-			}
-		}
-		else {
-			SirDrakeHeart.main.getServer().broadcastMessage(msg);
-		}
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
+		Player player = event.getPlayer();
+		event.setLeaveMessage("[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has been kicked from the game.");
 	}
 	
 	public String convertColors(String str) {
 		Pattern color_codes = Pattern.compile("&([0-9A-Fa-fkK])");
 		Matcher find_colors = color_codes.matcher(str);
 		while (find_colors.find()) {
-		 str = find_colors.replaceFirst(new StringBuilder().append("ยง").append(find_colors.group(1)).toString());
+		 str = find_colors.replaceFirst(new StringBuilder().append("ง").append(find_colors.group(1)).toString());
 		 find_colors = color_codes.matcher(str);
 		}
 		return str;

@@ -8,8 +8,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
+import com.gmail.nossr50.api.ExperienceAPI;
+import com.gmail.nossr50.datatypes.SkillType;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -82,6 +86,10 @@ public class SDHPlayer implements Serializable {
 		return this.powerLevel;
 	}
 	
+	public String getName() {
+		return this.name;
+	}
+	
 	public void save() {
 		try {
 			data.add(this);
@@ -141,6 +149,26 @@ public class SDHPlayer implements Serializable {
 
 	public void setPowerLevel(Integer newLevel) {
 		this.powerLevel = newLevel;		
+	}
+	
+	public void updatePowerLevel(Boolean broadcast) {
+		Player player = SirDrakeHeart.main.getServer().getPlayer(this.getName());
+		Integer currentLevel = this.getPowerLevel();
+		this.updatePowerLevel();
+		Integer newLevel = this.getPowerLevel();
+		if(newLevel > currentLevel) {
+			Utils.broadcastToPlayers(player,"[ "+ChatColor.AQUA+"Info "+ChatColor.WHITE+"] "+ChatColor.YELLOW+player.getName()+" has upgraded up to Combat Level "+newLevel);
+		}
+	}
+	
+	public void updatePowerLevel() {
+		Player player = SirDrakeHeart.main.getServer().getPlayer(this.getName());
+		ExperienceAPI xpapi = new ExperienceAPI();
+		
+		Integer levels = xpapi.getLevel(player, SkillType.ARCHERY) + xpapi.getLevel(player, SkillType.SWORDS) + xpapi.getLevel(player, SkillType.UNARMED);
+		Integer newLevel = (int) Math.floor(levels/3);
+		
+		this.setPowerLevel(newLevel);
 	}
 	
 }

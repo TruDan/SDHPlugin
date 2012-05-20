@@ -24,6 +24,7 @@ public class SirDrakeHeart extends JavaPlugin {
 	public static Economy economy = null;
 	public void onEnable(){ 
 		log = this.getLogger();
+		log.setFilter(new DCReasonFilter(this));
 		SirDrakeHeart.main = this;
 		
 		PluginManager pm = getServer().getPluginManager();
